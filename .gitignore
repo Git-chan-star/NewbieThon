@@ -7,6 +7,7 @@ local.properties
 
 # Log/OS Files
 *.log
+.DS_Store
 
 # Android Studio generated files and folders
 captures/
@@ -32,3 +33,13 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Node, Expo and Supabase local files
+.env
+.env.*
+!.env.example
+node_modules/
+.expo/
+dist/
+supabase/.branches/
+supabase/.temp/
