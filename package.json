@@ -1,10 +1,15 @@
 {
-  "name": "newbiethon-app",
+  "name": "jeongong-pick-app",
   "version": "1.0.0",
+  "private": true,
   "main": "expo-router/entry",
+  "engines": {
+    "node": ">=22.13"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@supabase/supabase-js": "^2.116.0",
     "@tanstack/react-query": "^5.102.8",
     "expo": "~57.0.22",
     "expo-constants": "~57.0.18",
@@ -19,11 +24,13 @@
     "react-native-gesture-handler": "~2.32.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
+    "react-native-url-polyfill": "^4.0.0",
     "react-native-web": "^0.21.2",
     "zod": "^4.6.2",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@types/react": "~19.2.2",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~57.0.2",
@@ -34,8 +41,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "test": "node --test tests/*.test.mjs",
     "lint": "expo lint",
-    "typecheck": "tsc --noEmit"
-  },
-  "private": true
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run typecheck && npm run lint && npm test"
+  }
 }

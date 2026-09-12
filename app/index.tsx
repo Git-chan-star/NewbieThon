@@ -13,7 +13,9 @@ export default function Index() {
   }
 
   if (user.role === 'employer') {
-    return <Redirect href="/(auth)/employer-pending" />;
+    return user.onboardingCompleted
+      ? <Redirect href="/(employer)/(tabs)" />
+      : <Redirect href="/(auth)/employer-onboarding" />;
   }
 
   if (user.role === 'student' && !user.onboardingCompleted) {

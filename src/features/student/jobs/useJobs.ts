@@ -1,12 +1,12 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { JobDetail, JobSearchQuery } from '@/domain/contracts/types';
 import { studentKeys } from '@/lib/queryKeys';
-import { mockStudentJobRepository } from '@/repositories/mock';
+import { studentJobRepository } from '@/repositories';
 
 export function useRecommendedJobs() {
   return useInfiniteQuery({
     queryKey: studentKeys.recommendedJobs(),
-    queryFn: ({ pageParam }) => mockStudentJobRepository.listRecommendedJobs(pageParam),
+    queryFn: ({ pageParam }) => studentJobRepository.listRecommendedJobs(pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -15,7 +15,7 @@ export function useRecommendedJobs() {
 export function useSearchJobs(query: Omit<JobSearchQuery, 'cursor'>) {
   return useInfiniteQuery({
     queryKey: studentKeys.jobSearch(query),
-    queryFn: ({ pageParam }) => mockStudentJobRepository.searchJobs({ ...query, cursor: pageParam }),
+    queryFn: ({ pageParam }) => studentJobRepository.searchJobs({ ...query, cursor: pageParam }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -24,7 +24,7 @@ export function useSearchJobs(query: Omit<JobSearchQuery, 'cursor'>) {
 export function useJobDetail(jobId: string) {
   return useQuery({
     queryKey: studentKeys.jobDetail(jobId),
-    queryFn: () => mockStudentJobRepository.getJob(jobId),
+    queryFn: () => studentJobRepository.getJob(jobId),
     enabled: Boolean(jobId),
   });
 }
@@ -32,7 +32,7 @@ export function useJobDetail(jobId: string) {
 export function useSavedJobs() {
   return useInfiniteQuery({
     queryKey: studentKeys.savedJobs(),
-    queryFn: ({ pageParam }) => mockStudentJobRepository.listSavedJobs(pageParam),
+    queryFn: ({ pageParam }) => studentJobRepository.listSavedJobs(pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -44,9 +44,9 @@ export function useToggleSaveJob() {
   return useMutation({
     mutationFn: async ({ jobId, saved }: { jobId: string; saved: boolean }) => {
       if (saved) {
-        await mockStudentJobRepository.unsaveJob(jobId);
+        await studentJobRepository.unsaveJob(jobId);
       } else {
-        await mockStudentJobRepository.saveJob(jobId);
+        await studentJobRepository.saveJob(jobId);
       }
     },
     onMutate: async ({ jobId, saved }) => {

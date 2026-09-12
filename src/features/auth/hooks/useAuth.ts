@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import type { SignInInput, SignUpInput, UserRole } from '@/domain/contracts/types';
-import { mockAuthRepository } from '@/repositories/mock';
+import { authRepository } from '@/repositories';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '../store/authStore';
 
@@ -11,7 +11,7 @@ export function useSessionBootstrap() {
 
   const query = useQuery({
     queryKey: ['auth', 'session'],
-    queryFn: () => mockAuthRepository.getSession(),
+    queryFn: () => authRepository.getSession(),
   });
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export function useSessionBootstrap() {
 export function useSignUp() {
   const setUser = useAuthStore((s) => s.setUser);
   return useMutation({
-    mutationFn: (input: SignUpInput) => mockAuthRepository.signUp(input),
+    mutationFn: (input: SignUpInput) => authRepository.signUp(input),
     onSuccess: (user) => setUser(user),
   });
 }
@@ -34,7 +34,7 @@ export function useSignUp() {
 export function useSignIn() {
   const setUser = useAuthStore((s) => s.setUser);
   return useMutation({
-    mutationFn: (input: SignInInput) => mockAuthRepository.signIn(input),
+    mutationFn: (input: SignInInput) => authRepository.signIn(input),
     onSuccess: (user) => setUser(user),
   });
 }
@@ -42,7 +42,7 @@ export function useSignIn() {
 export function useSignOut() {
   const setUser = useAuthStore((s) => s.setUser);
   return useMutation({
-    mutationFn: () => mockAuthRepository.signOut(),
+    mutationFn: () => authRepository.signOut(),
     onSuccess: () => {
       setUser(null);
       queryClient.clear();
@@ -53,7 +53,7 @@ export function useSignOut() {
 export function useSelectRole() {
   const setUser = useAuthStore((s) => s.setUser);
   return useMutation({
-    mutationFn: (role: Exclude<UserRole, 'admin'>) => mockAuthRepository.selectRole(role),
+    mutationFn: (role: Exclude<UserRole, 'admin'>) => authRepository.selectRole(role),
     onSuccess: (user) => setUser(user),
   });
 }
@@ -61,7 +61,7 @@ export function useSelectRole() {
 export function useCompleteOnboarding() {
   const setUser = useAuthStore((s) => s.setUser);
   return useMutation({
-    mutationFn: () => mockAuthRepository.completeOnboarding(),
+    mutationFn: () => authRepository.completeOnboarding(),
     onSuccess: (user) => setUser(user),
   });
 }

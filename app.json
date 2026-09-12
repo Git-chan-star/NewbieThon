@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "NewbieThon",
+    "name": "전공픽",
     "slug": "newbiethon-app",
     "scheme": "newbiethon",
     "version": "1.0.0",
@@ -15,6 +15,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.newbiethon.jeongongpick",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

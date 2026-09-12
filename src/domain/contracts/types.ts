@@ -14,7 +14,7 @@ export type ApplicationStatus =
   | 'rejected'
   | 'withdrawn';
 
-export type OfferStatus = 'sent' | 'viewed' | 'accepted' | 'declined' | 'expired';
+export type OfferStatus = 'pending' | 'accepted' | 'declined' | 'expired' | 'canceled';
 
 export type SkillLevel = 'learned' | 'basic' | 'project_used' | 'work_ready';
 
@@ -86,6 +86,48 @@ export interface EmployerProfile {
   introduction?: string;
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
   logoUrl?: string;
+}
+
+export interface EmployerOnboardingInput {
+  organizationName: string;
+  organizationType: string;
+  industry?: string;
+  introduction?: string;
+  contactName: string;
+  position?: string;
+  workEmail: string;
+  contactHours?: string;
+}
+
+export interface EmployerJobInput {
+  title: string;
+  category: string;
+  summary: string;
+  responsibilities: string[];
+  deliverables: string[];
+  workMode: WorkMode;
+  locationText?: string;
+  startDate: string;
+  endDate: string;
+  applicationDeadline: string;
+  compensationType: Job['compensationType'];
+  compensationMin?: number;
+  hoursPerWeek?: number;
+  headcount: number;
+  beginnerFriendly: boolean;
+  educationOrFeedback: boolean;
+}
+
+export interface EmployerApplicant {
+  id: string;
+  jobId: string;
+  studentId: string;
+  displayName: string;
+  schoolName?: string;
+  majorName?: string;
+  status: ApplicationStatus;
+  shortAnswer?: string;
+  submittedAt: string;
 }
 
 export interface JobSkillRequirement {
@@ -232,4 +274,116 @@ export interface ApplicationInput {
   availableStartDate?: string;
   availabilityNote?: string;
   shortAnswer?: string;
+}
+
+export type CompetitionStatus = 'draft' | 'published' | 'closed';
+export type TeamStatus = 'recruiting' | 'full' | 'closed';
+export type TeamApplicationStatus = 'pending' | 'accepted' | 'rejected' | 'withdrawn';
+
+export interface Competition {
+  id: string;
+  organizerId?: string;
+  title: string;
+  organizerName: string;
+  summary: string;
+  description?: string;
+  categories: string[];
+  requiredSkills: string[];
+  locationText?: string;
+  startsAt?: string;
+  endsAt?: string;
+  applicationDeadline?: string;
+  sourceUrl?: string;
+  status: CompetitionStatus;
+  publishedAt?: string;
+  createdAt: string;
+}
+
+export interface CompetitionDetail extends Competition {
+  teams: CompetitionTeam[];
+}
+
+export interface CreateTeamInput {
+  competitionId: string;
+  name: string;
+  introduction: string;
+  openings: { roleName: string; description?: string; skillNames: string[]; headcount: number }[];
+}
+
+export interface TeamRoleOpening {
+  id: string;
+  teamId: string;
+  roleName: string;
+  description?: string;
+  skillNames: string[];
+  headcount: number;
+  filledCount: number;
+}
+
+export interface CompetitionTeam {
+  id: string;
+  competitionId: string;
+  leaderId: string;
+  name: string;
+  introduction: string;
+  status: TeamStatus;
+  memberCount: number;
+  openings: TeamRoleOpening[];
+  createdAt: string;
+}
+
+export interface TeamApplication {
+  id: string;
+  teamId: string;
+  openingId: string;
+  studentId: string;
+  message: string;
+  status: TeamApplicationStatus;
+  createdAt: string;
+}
+
+export interface ConversationSummary {
+  id: string;
+  title: string;
+  kind: 'job' | 'team';
+  preview?: string;
+  lastMessageAt?: string;
+  unreadCount: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  type: 'text' | 'file' | 'system';
+  body?: string;
+  attachmentPath?: string;
+  createdAt: string;
+}
+
+export type WorkStatus = 'ready' | 'in_progress' | 'submitted' | 'revision_requested' | 'completed' | 'canceled' | 'disputed';
+
+export interface WorkDeliverable {
+  id: string;
+  title: string;
+  note?: string;
+  externalUrl?: string;
+  submittedAt: string;
+}
+
+export interface WorkItem {
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  employerId: string;
+  studentId: string;
+  status: WorkStatus;
+  agreedScope: string;
+  agreedDeliverables: string[];
+  compensationType: Job['compensationType'];
+  compensationAmount?: number;
+  startDate?: string;
+  endDate?: string;
+  deliverables: WorkDeliverable[];
+  createdAt: string;
 }

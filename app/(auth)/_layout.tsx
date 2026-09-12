@@ -17,7 +17,7 @@ export default function AuthLayout() {
       <Stack.Screen name="sign-in" />
       <Stack.Screen name="sign-up" />
       <Stack.Screen name="role-select" options={{ headerBackVisible: false }} />
-      <Stack.Screen name="employer-pending" options={{ headerBackVisible: false }} />
+      <Stack.Screen name="employer-onboarding" options={{ headerBackVisible: false }} />
       <Stack.Screen name="student-onboarding" options={{ headerShown: false }} />
     </Stack>
   );

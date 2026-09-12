@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ChoiceChip, StepHeader, StickyBottomAction, Button } from '@/components/ui';
 import { useOnboardingStore } from '@/features/student/onboarding/onboardingStore';
-import { mockStudentRepository } from '@/repositories/mock';
+import { studentRepository } from '@/repositories';
 import { colors, spacing, typography } from '@/theme';
 
 const INTEREST_OPTIONS = ['개발', '데이터·AI', '디자인·UI·UX', '기획·리서치', '콘텐츠·마케팅', '기타'];
@@ -16,7 +16,7 @@ export default function InterestsScreen() {
   const [interests, setInterests] = useState<string[]>(draft.interests);
 
   const saveStep = useMutation({
-    mutationFn: () => mockStudentRepository.saveOnboardingStep({ interests }),
+    mutationFn: () => studentRepository.saveOnboardingStep({ interests }),
   });
 
   const toggle = (interest: string) => {

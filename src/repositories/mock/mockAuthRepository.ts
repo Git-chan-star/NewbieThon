@@ -103,7 +103,7 @@ export const mockAuthRepository: AuthRepository = {
             employerVerified: false,
             studentId: d.currentUserId!,
             message: '프로필을 보고 SNS 감각이 좋으실 것 같아 제안 드려요. 편하게 이야기 나눠봐요!',
-            status: 'sent',
+            status: 'pending',
             expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5).toISOString(),
             createdAt: nowIso(),
           });

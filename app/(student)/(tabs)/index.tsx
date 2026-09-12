@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { EmptyState, ErrorState, JobCard, ProgressBar, SkeletonJobCard, StatusBadge } from '@/components/ui';
+import { Button, EmptyState, ErrorState, JobCard, ProgressBar, SkeletonJobCard, StatusBadge } from '@/components/ui';
 import { useMyApplications } from '@/features/student/applications/useApplications';
 import { useRecommendedJobs } from '@/features/student/jobs/useJobs';
 import { useMyProfile } from '@/features/student/profile/useProfile';
@@ -100,6 +100,11 @@ export default function StudentHomeScreen() {
               ))}
             </View>
           )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>연결된 업무</Text>
+          <Button label="업무 진행·결과물 관리" variant="secondary" onPress={() => router.push('/work')} />
         </View>
 
         {profile.data ? (

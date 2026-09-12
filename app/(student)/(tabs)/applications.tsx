@@ -112,7 +112,7 @@ export default function ApplicationsScreen() {
                 <Text style={styles.cardDeadline}>{formatDeadlineRemaining(item.expiresAt)}</Text>
               ) : null}
 
-              {item.status === 'sent' || item.status === 'viewed' ? (
+              {item.status === 'pending' ? (
                 <View style={styles.offerActions}>
                   <View style={{ flex: 1 }}>
                     <Button

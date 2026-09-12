@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     ...typography.body1,
     color: colors.textPrimary,
     minHeight: 44,
+    height: 52,
     backgroundColor: colors.surface,
   },
   inputError: { borderColor: colors.danger },

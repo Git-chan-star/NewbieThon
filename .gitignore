@@ -49,6 +49,7 @@ local.properties
 
 # Log/OS Files
 *.log
+.DS_Store
 
 # Android Studio generated files and folders
 captures/
@@ -75,3 +76,10 @@ backend/.venv/
 backend/__pycache__/
 *.pyc
 backend/*.db
+
+# Node, Expo and Supabase local files
+.env
+.env.*
+!.env.example
+supabase/.branches/
+supabase/.temp/

@@ -2,10 +2,11 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChoiceChip, EmptyState, ErrorState, JobCard, SkeletonJobCard, TextField } from '@/components/ui';
+import { ChoiceChip, CompetitionCard, EmptyState, ErrorState, JobCard, SkeletonJobCard, TextField } from '@/components/ui';
 import type { Job } from '@/domain/contracts/types';
 import { useSavedJobs, useSearchJobs, useToggleSaveJob } from '@/features/student/jobs/useJobs';
 import { useDebouncedValue } from '@/lib/useDebouncedValue';
+import { useCompetitions } from '@/features/competitions/useCompetitions';
 import { colors, spacing, typography } from '@/theme';
 
 const CATEGORY_OPTIONS = ['개발', '데이터·AI', '디자인·UI·UX', '기획·리서치', '콘텐츠·마케팅'];
@@ -20,10 +21,13 @@ const WORK_MODE_OPTIONS: { value: Job['workMode']; label: string }[] = [
   { value: 'hybrid', label: '혼합' },
 ];
 
-type Segment = 'search' | 'saved';
+type Segment = 'search' | 'competitions' | 'saved';
 
 export default function SearchScreen() {
   const [segment, setSegment] = useState<Segment>('search');
+  const [competitionKeyword, setCompetitionKeyword] = useState('');
+  const debouncedCompetitionKeyword = useDebouncedValue(competitionKeyword, 300);
+  const competitions = useCompetitions(debouncedCompetitionKeyword);
   const [keyword, setKeyword] = useState('');
   const debouncedKeyword = useDebouncedValue(keyword, 300);
   const [category, setCategory] = useState<string | undefined>();
@@ -70,7 +74,8 @@ export default function SearchScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.segmentRow}>
-        <ChoiceChip label="찾기" selected={segment === 'search'} onPress={() => setSegment('search')} />
+        <ChoiceChip label="전공 일거리" selected={segment === 'search'} onPress={() => setSegment('search')} />
+        <ChoiceChip label="대회·팀 찾기" selected={segment === 'competitions'} onPress={() => setSegment('competitions')} />
         <ChoiceChip
           label={`저장한 공고 ${savedJobItems.length > 0 ? savedJobItems.length : ''}`.trim()}
           selected={segment === 'saved'}
@@ -186,6 +191,20 @@ export default function SearchScreen() {
         }
       />
         </>
+      ) : segment === 'competitions' ? (
+        <View style={styles.competitionPane}>
+          <View style={styles.searchBar}>
+            <TextField label="대회 검색" placeholder="해커톤, 공모전, 관심 기술" value={competitionKeyword} onChangeText={setCompetitionKeyword} />
+          </View>
+          <FlatList
+            data={competitions.data ?? []}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContent}
+            ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
+            renderItem={({ item }) => <CompetitionCard competition={item} onPress={() => router.push(`/(student)/competition/${item.id}`)} />}
+            ListEmptyComponent={<EmptyState title="조건에 맞는 대회가 없어요" description="다른 키워드로 다시 찾아보세요." />}
+          />
+        </View>
       ) : (
         <FlatList
           data={savedJobItems}
@@ -226,6 +245,7 @@ export default function SearchScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
+  competitionPane: { flex: 1 },
   segmentRow: { flexDirection: 'row', gap: spacing.xs, paddingHorizontal: spacing.xl, paddingTop: spacing.sm },
   searchBar: { paddingHorizontal: spacing.xl, paddingTop: spacing.sm },
   filterBlock: { paddingTop: spacing.sm, gap: spacing.xs },

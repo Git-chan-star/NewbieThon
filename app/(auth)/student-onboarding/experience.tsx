@@ -6,7 +6,7 @@ import { KeyboardAwareScrollView } from '@/components/layout/KeyboardAwareScroll
 import { Button, ChoiceChip, StepHeader, StickyBottomAction, TextField } from '@/components/ui';
 import type { DraftCourse, DraftProject } from '@/features/student/onboarding/onboardingStore';
 import { useOnboardingStore } from '@/features/student/onboarding/onboardingStore';
-import { mockStudentRepository } from '@/repositories/mock';
+import { studentRepository } from '@/repositories';
 import { colors, spacing, typography } from '@/theme';
 
 const PROJECT_SOURCES: { value: DraftProject['source']; label: string }[] = [
@@ -32,9 +32,9 @@ export default function ExperienceScreen() {
   const saveStep = useMutation({
     mutationFn: async () => {
       await Promise.all([
-        ...courses.map((c) => mockStudentRepository.addCourse(c)),
+        ...courses.map((c) => studentRepository.addCourse(c)),
         ...projects.map((p) =>
-          mockStudentRepository.createProject({
+          studentRepository.createProject({
             title: p.title,
             summary: p.summary,
             roleDescription: p.roleDescription,

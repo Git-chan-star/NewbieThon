@@ -14,7 +14,7 @@ import {
 import { SKILL_CATALOG } from '@/repositories/mock/data/skills';
 import type { DraftSkill } from '@/features/student/onboarding/onboardingStore';
 import { useOnboardingStore } from '@/features/student/onboarding/onboardingStore';
-import { mockStudentRepository } from '@/repositories/mock';
+import { studentRepository } from '@/repositories';
 import { colors, spacing, typography } from '@/theme';
 
 export default function SkillsScreen() {
@@ -34,7 +34,7 @@ export default function SkillsScreen() {
   const saveStep = useMutation({
     mutationFn: async () => {
       await Promise.all(
-        skills.map((s) => mockStudentRepository.upsertSkill({ skillId: s.skillId, skillName: s.skillName, level: s.level }))
+        skills.map((s) => studentRepository.upsertSkill({ skillId: s.skillId, skillName: s.skillName, level: s.level }))
       );
     },
   });

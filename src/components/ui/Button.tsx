@@ -1,5 +1,5 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
-import { colors, minTouchSize, radius, spacing, typography } from '@/theme';
+import { colors, minTouchSize, primaryButtonHeight, radius, spacing, typography } from '@/theme';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'md' | 'lg';
@@ -61,7 +61,11 @@ function variantStyle(variant: Variant, disabled: boolean, pressed: boolean) {
     case 'danger':
       return { backgroundColor: pressed ? '#D93B47' : colors.danger };
     case 'secondary':
-      return { backgroundColor: pressed ? colors.bgMuted : colors.primaryMuted };
+      return {
+        backgroundColor: pressed ? colors.bgMuted : colors.surface,
+        borderWidth: 1,
+        borderColor: colors.border,
+      };
     case 'ghost':
       return { backgroundColor: pressed ? colors.bgMuted : 'transparent' };
     default:
@@ -83,7 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.lg,
   },
-  lg: { minHeight: minTouchSize + 8 },
+  lg: { minHeight: primaryButtonHeight },
   md: { minHeight: minTouchSize, paddingVertical: spacing.xs },
   fullWidth: { width: '100%' },
   label: { ...typography.body1Bold },

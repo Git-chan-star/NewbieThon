@@ -10,4 +10,5 @@ export { Skeleton, SkeletonJobCard } from './Skeleton';
 export { StickyBottomAction } from './StickyBottomAction';
 export { JobCard } from './JobCard';
 export { SkillLevelSelector } from './SkillLevelSelector';
+export { CompetitionCard } from './CompetitionCard';
 export { SkillChip } from './SkillChip';

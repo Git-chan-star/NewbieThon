@@ -1,10 +1,10 @@
 export const colors = {
-  bg: '#FFFFFF',
+  bg: '#F6F8FB',
   bgMuted: '#F2F4F6',
   surface: '#FFFFFF',
   border: '#E5E8EB',
   textPrimary: '#191F28',
-  textSecondary: '#4E5968',
+  textSecondary: '#6B7684',
   textTertiary: '#8B95A1',
   textDisabled: '#B0B8C1',
   primary: '#3182F6',
@@ -33,15 +33,16 @@ export const spacing = {
 
 export const radius = {
   sm: 8,
-  md: 12,
-  lg: 16,
+  md: 14,
+  lg: 15,
   xl: 20,
   pill: 999,
 } as const;
 
 export const typography = {
-  display: { fontSize: 28, lineHeight: 36, fontWeight: '700' as const },
-  title1: { fontSize: 22, lineHeight: 30, fontWeight: '700' as const },
+  display: { fontSize: 32, lineHeight: 42, fontWeight: '800' as const },
+  hero: { fontSize: 26, lineHeight: 35, fontWeight: '800' as const },
+  title1: { fontSize: 27, lineHeight: 36, fontWeight: '800' as const },
   title2: { fontSize: 18, lineHeight: 26, fontWeight: '700' as const },
   body1: { fontSize: 16, lineHeight: 24, fontWeight: '400' as const },
   body1Bold: { fontSize: 16, lineHeight: 24, fontWeight: '600' as const },
@@ -62,3 +63,5 @@ export const shadow = {
 } as const;
 
 export const minTouchSize = 44;
+export const screenPadding = 20;
+export const primaryButtonHeight = 54;

@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from '@/components/layout/KeyboardAwareScrollView';
 import { ChoiceChip, StatusBadge, StepHeader, StickyBottomAction, TextField, Button } from '@/components/ui';
 import { useOnboardingStore } from '@/features/student/onboarding/onboardingStore';
-import { mockStudentRepository } from '@/repositories/mock';
+import { studentRepository } from '@/repositories';
 import { colors, spacing, typography } from '@/theme';
 
 const GRADE_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
@@ -21,7 +21,7 @@ export default function BasicInfoScreen() {
 
   const saveStep = useMutation({
     mutationFn: () =>
-      mockStudentRepository.saveOnboardingStep({
+      studentRepository.saveOnboardingStep({
         schoolName,
         majorName,
         gradeYear,

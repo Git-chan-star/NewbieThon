@@ -1,31 +1,31 @@
 import { useQuery } from '@tanstack/react-query';
 import { studentKeys } from '@/lib/queryKeys';
-import { mockStudentRepository } from '@/repositories/mock';
+import { studentRepository } from '@/repositories';
 
 export function useMyProfile() {
   return useQuery({
     queryKey: studentKeys.profile(),
-    queryFn: () => mockStudentRepository.getMyProfile(),
+    queryFn: () => studentRepository.getMyProfile(),
   });
 }
 
 export function useMySkills() {
   return useQuery({
     queryKey: studentKeys.skills(),
-    queryFn: () => mockStudentRepository.listSkills(),
+    queryFn: () => studentRepository.listSkills(),
   });
 }
 
 export function useMyProjects() {
   return useQuery({
     queryKey: studentKeys.projects(),
-    queryFn: () => mockStudentRepository.listProjects(),
+    queryFn: () => studentRepository.listProjects(),
   });
 }
 
 export function useMyCourses() {
   return useQuery({
     queryKey: studentKeys.courses(),
-    queryFn: () => mockStudentRepository.listCourses(),
+    queryFn: () => studentRepository.listCourses(),
   });
 }

@@ -6,7 +6,7 @@ import { KeyboardAwareScrollView } from '@/components/layout/KeyboardAwareScroll
 import { Button, ChoiceChip, StepHeader, StickyBottomAction, TextField } from '@/components/ui';
 import type { WorkMode } from '@/domain/contracts/types';
 import { useOnboardingStore } from '@/features/student/onboarding/onboardingStore';
-import { mockStudentRepository } from '@/repositories/mock';
+import { studentRepository } from '@/repositories';
 import { colors, spacing, typography } from '@/theme';
 
 const CATEGORY_OPTIONS = ['개발', '데이터·AI', '디자인·UI·UX', '기획·리서치', '콘텐츠·마케팅', '기타'];
@@ -30,7 +30,7 @@ export default function PreferencesScreen() {
 
   const saveStep = useMutation({
     mutationFn: () =>
-      mockStudentRepository.saveOnboardingStep({
+      studentRepository.saveOnboardingStep({
         preferredJobCategories: categories,
         preferredWorkModes: workModes,
         availableDays: days,

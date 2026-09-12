@@ -1,62 +1,67 @@
-# NewbieThon
-고려대학교 뉴비톤 우승 후보자의 깃허브
+# 전공픽
 
-## 백엔드
+대학 저학년이 수업과 프로젝트에서 익힌 전공 역량으로 첫 유료 업무를 찾고, 해커톤·공모전 팀원도 구할 수 있는 Android 우선 모바일 앱입니다. 구인자는 짧고 명확한 전공 업무를 등록하고 지원자와 대화한 뒤 결과물과 완료 이력을 관리할 수 있습니다.
 
-대학생과 기업의 단기 업무 매칭 API입니다. Python + FastAPI + SQLite로 구성했습니다.
+## 현재 구현 범위
 
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\python -m pip install -r requirements.txt
-.\.venv\Scripts\python -m uvicorn main:app --host 127.0.0.1 --port 8000
-```
+- 학생: 가입, 역할 선택, 5단계 프로필, 추천·검색·저장, 간편 지원, 제안 수락, 대회 탐색, 팀 생성·지원, 메시지, 업무 결과물 제출
+- 구인자: 조직 프로필, 공고 등록·게시, 지원자 상태 관리, 학생 검색, 메시지, 업무 시작·수정 요청·완료
+- 공통: Expo SDK 57, React Native, TypeScript strict, Expo Router, TanStack Query
+- 서버: Supabase Auth, PostgreSQL, RLS, Storage, RPC 상태 전환, 인앱 알림, 감사 로그
+- UI: `#3182F6` 중심의 전공픽 디자인 시스템, 밝은 회색 배경, 20px 화면 여백, 54px 주요 버튼, 둥근 입력창·카드
 
-- API 테스트 화면: http://127.0.0.1:8000/docs
-- Android Studio 에뮬레이터 주소: `http://10.0.2.2:8000/`
-- [API 사용법과 앱 연결 안내](backend/README.md)
-- 테스트: `backend` 폴더에서 `.\.venv\Scripts\python -m unittest -v`
+Supabase 환경값이 있으면 실제 서버 저장소를 사용하고, 값이 없으면 UI 개발과 발표 연습을 위한 예시 데이터로 실행됩니다.
 
-회원가입·로그인, 공고 등록·조회, 학생 지원, 기업 제안·수락, 매칭·완료 처리를 제공합니다. 현재 로컬 MVP이며 인터넷 배포와 결제·정산은 포함하지 않습니다.
+## 시작하기
 
-## 프론트엔드 (앱)
+필요 환경은 Node.js 22.13 이상입니다.
 
-React Native + Expo + TypeScript(strict) + Expo Router 기반 모바일 앱입니다.
-
-### 실행 방법
-
-```powershell
+```bash
 npm install
-npm run android   # 또는 npm run ios / npm run web
+cp .env.example .env.local
+npm run android
 ```
 
-`npm run web`으로 실행하면 브라우저에서도 대부분의 화면을 바로 확인할 수 있어요 (빠른 확인용, 최종 검증은 실기기/에뮬레이터 권장).
+Android 에뮬레이터에서 로컬 Supabase를 연결할 때는 `.env.local`에 다음 값을 넣습니다.
 
-### 개발 스크립트
-
-```powershell
-npm run typecheck   # tsc --noEmit
-npm run lint        # expo lint (eslint-config-expo)
+```text
+EXPO_PUBLIC_SUPABASE_URL=http://10.0.2.2:54321
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<로컬 또는 프로젝트 공개 키>
 ```
 
-### 현재 상태 (백엔드 미연동)
+브라우저로 UI만 빠르게 확인하려면 `npm run web`을 사용합니다. 최종 확인은 Android 에뮬레이터나 실제 기기에서 진행해야 합니다.
 
-학생 화면은 아직 실제 백엔드(FastAPI)와 연결되지 않았고, `src/repositories/mock/`의 목데이터와 AsyncStorage로 완전히 동작해요. 화면은 `src/repositories/interfaces/`에 정의된 인터페이스에만 의존하므로, 이후 실제 API를 호출하는 repository 구현으로 교체하면 화면 코드는 그대로 유지돼요.
+## Supabase 로컬 실행
 
-**완성된 핵심 흐름**: 회원가입 → 역할 선택 → 학생 온보딩(5단계) → 맞춤 공고 홈/검색 → 공고 상세 → 간편 지원(3단계) → 지원 현황 확인. 앱을 종료했다 다시 열어도 로그인 세션과 온보딩 진행 상태가 복구돼요.
+Supabase CLI와 Docker가 준비된 환경에서 다음 순서로 실행합니다.
 
-**받은 제안**: 역할을 학생으로 선택하면 데모용 제안 1건이 자동으로 생성돼요 (지원 탭 → 받은 제안).
-
-**아직 미구현**: 실시간 메시지(대화방 데이터), 저장한 공고 전용 목록 화면, 완료한 유료 업무 경험 카드, 자동화 테스트. 메시지 탭과 프로필의 완료 업무 영역은 빈 상태(EmptyState)로 정직하게 표시돼요.
-
-### 환경변수
-
-현재는 환경변수가 필요 없어요 (전부 mock repository로 동작). 실제 API를 연결할 때는 `.env.local`에 아래와 같이 추가하고 커밋하지 마세요.
-
-```
-EXPO_PUBLIC_API_BASE_URL=http://10.0.2.2:8000
+```bash
+npx supabase start
+npx supabase db reset
 ```
 
-### 폴더 소유권 (개발자 1 / 프론트엔드)
+`db reset`은 로컬 개발 DB를 다시 만들고 `supabase/migrations/`와 `supabase/seed.sql`을 적용합니다. 운영 프로젝트에는 reset 명령을 사용하지 마세요.
 
-`app/(auth)/`, `app/(student)/`, `src/components/`, `src/features/student/`, `src/repositories/mock/`. `supabase/`, `backend/`, `app/(employer)/`, `src/features/employer/`, `src/repositories/supabase/`는 개발자 2 소유이며 수정하지 않았어요.
+## 검증
+
+```bash
+npm run verify
+EXPO_NO_TELEMETRY=1 npx expo export --platform web
+```
+
+`verify`는 TypeScript, ESLint, PostgreSQL 마이그레이션·상태 규칙 테스트를 차례로 실행합니다.
+
+## 주요 폴더
+
+```text
+app/                         역할별 화면과 라우팅
+src/components/ui/           전공픽 공통 UI
+src/domain/contracts/        프런트·백엔드 공통 타입
+src/repositories/            mock/Supabase 저장소 전환 계층
+src/features/                학생·구인자·대회·메시지·업무 기능
+supabase/migrations/          스키마, 보안 정책, 업무 흐름
+tests/                        상태 규칙과 마이그레이션 통합 테스트
+docs/                         서버 계약과 Android 연결 안내
+```
+
+실제 서비스 배포 전에는 Supabase 프로젝트 연결, 학교·사업자 인증, 푸시 알림, 운영자 신고 처리, 결제·세금 정책을 별도로 확정해야 합니다.

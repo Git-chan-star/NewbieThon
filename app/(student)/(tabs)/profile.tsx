@@ -5,7 +5,7 @@ import { useSignOut } from '@/features/auth/hooks/useAuth';
 import { useMyCourses, useMyProfile, useMyProjects, useMySkills } from '@/features/student/profile/useProfile';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { mockStudentRepository } from '@/repositories/mock';
+import { studentRepository } from '@/repositories';
 import { studentKeys } from '@/lib/queryKeys';
 import { colors, radius, spacing, typography } from '@/theme';
 
@@ -19,7 +19,7 @@ export default function ProfileScreen() {
   const queryClient = useQueryClient();
 
   const toggleDiscoverable = useMutation({
-    mutationFn: (isDiscoverable: boolean) => mockStudentRepository.updateProfile({ isDiscoverable }),
+    mutationFn: (isDiscoverable: boolean) => studentRepository.updateProfile({ isDiscoverable }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: studentKeys.profile() }),
   });
 
