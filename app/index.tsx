@@ -12,6 +12,10 @@ export default function Index() {
     return <Redirect href="/(auth)/role-select" />;
   }
 
+  if (user.role === 'admin') {
+    return <Redirect href="/(admin)/(tabs)" />;
+  }
+
   if (user.role === 'employer') {
     return user.onboardingCompleted
       ? <Redirect href="/(employer)/(tabs)" />

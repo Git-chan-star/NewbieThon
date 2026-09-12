@@ -10,6 +10,7 @@ const publishableKey =
   process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(url && publishableKey);
+export const isProductionBackendMissing = !__DEV__ && !isSupabaseConfigured;
 
 const CHUNK_SIZE = 1800;
 const secureStorage = {

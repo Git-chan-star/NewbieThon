@@ -9,7 +9,10 @@ import { colors, spacing, typography } from '@/theme';
 import { z } from 'zod';
 
 const schema = z.object({
-  email: z.string().email('올바른 이메일 형식이 아니에요.'),
+  loginId: z.string().trim().min(1, '이메일 또는 관리자 아이디를 입력해 주세요.').refine(
+    (value) => value.toLowerCase() === 'admin' || z.string().email().safeParse(value).success,
+    '올바른 이메일 또는 관리자 아이디를 입력해 주세요.'
+  ),
   password: z.string().min(1, '비밀번호를 입력해 주세요.'),
 });
 
@@ -23,11 +26,14 @@ export default function SignInScreen() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { loginId: '', password: '' },
   });
 
   const onSubmit = (values: FormValues) => {
-    signIn.mutate(values, {
+    const email = values.loginId.toLowerCase() === 'admin'
+      ? process.env.EXPO_PUBLIC_ADMIN_EMAIL ?? 'admin@itgu.local'
+      : values.loginId;
+    signIn.mutate({ email, password: values.password }, {
       onSuccess: () => router.replace('/'),
     });
   };
@@ -40,17 +46,17 @@ export default function SignInScreen() {
       <View style={styles.form}>
         <Controller
           control={control}
-          name="email"
+          name="loginId"
           render={({ field }) => (
             <TextField
-              label="이메일"
-              placeholder="student@example.com"
+              label="이메일 또는 관리자 아이디"
+              placeholder="student@example.com 또는 admin"
               required
               autoCapitalize="none"
               keyboardType="email-address"
               value={field.value}
               onChangeText={field.onChange}
-              errorMessage={errors.email?.message}
+              errorMessage={errors.loginId?.message}
             />
           )}
         />

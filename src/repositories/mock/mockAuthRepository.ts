@@ -7,6 +7,14 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+const demoAdminEmail = process.env.EXPO_PUBLIC_ADMIN_EMAIL ?? 'admin@itgu.local';
+
+function isDemoAdmin(input: SignInInput): boolean {
+  if (!__DEV__) return false;
+  const configuredPassword = process.env.EXPO_PUBLIC_DEMO_ADMIN_PASSWORD;
+  return Boolean(configuredPassword) && input.email.toLowerCase() === demoAdminEmail.toLowerCase() && input.password === configuredPassword;
+}
+
 export const mockAuthRepository: AuthRepository = {
   async signUp(input: SignUpInput): Promise<User> {
     await delay();
@@ -28,7 +36,7 @@ export const mockAuthRepository: AuthRepository = {
     };
 
     await mockDb.update((d) => {
-      d.users[user.id] = { ...user, email: input.email } as User & { email: string };
+      d.users[user.id] = { ...user, email: input.email, password: input.password } as User & { email: string; password: string };
       d.currentUserId = user.id;
     });
 
@@ -37,12 +45,33 @@ export const mockAuthRepository: AuthRepository = {
 
   async signIn(input: SignInInput): Promise<User> {
     await delay();
+
+    if (isDemoAdmin(input)) {
+      const admin: User = {
+        id: 'mock-admin',
+        role: 'admin',
+        displayName: '잇구 관리자',
+        onboardingCompleted: true,
+        createdAt: nowIso(),
+        updatedAt: nowIso(),
+      };
+      await mockDb.update((d) => {
+        d.users[admin.id] = { ...admin, email: demoAdminEmail, isActive: true } as User & { email: string; isActive: boolean };
+        d.currentUserId = admin.id;
+      });
+      return admin;
+    }
+
     const db = await mockDb.get();
     const user = Object.values(db.users).find(
       (u) => (u as User & { email?: string }).email === input.email
     );
     if (!user) {
       throw new Error('가입되지 않은 이메일이에요. 회원가입을 먼저 진행해 주세요.');
+    }
+    const savedPassword = (user as User & { password?: string }).password;
+    if (savedPassword && savedPassword !== input.password) {
+      throw new Error('비밀번호가 올바르지 않아요.');
     }
 
     await mockDb.update((d) => {

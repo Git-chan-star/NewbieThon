@@ -387,3 +387,45 @@ export interface WorkItem {
   deliverables: WorkDeliverable[];
   createdAt: string;
 }
+
+export interface AdminOverview {
+  totalUsers: number;
+  activeStudents: number;
+  activeEmployers: number;
+  publishedJobs: number;
+  pendingVerifications: number;
+  openReports: number;
+}
+
+export interface AdminUserSummary {
+  id: string;
+  displayName: string;
+  role: UserRole | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface AdminVerification {
+  userId: string;
+  organizationId: string;
+  organizationName: string;
+  contactName: string;
+  workEmail: string;
+  status: 'unverified' | 'pending' | 'verified' | 'rejected';
+  documentPath?: string;
+  submittedAt: string;
+}
+
+export type ReportStatus = 'received' | 'reviewing' | 'resolved' | 'dismissed';
+
+export interface AdminReport {
+  id: string;
+  reporterId: string;
+  targetType: 'user' | 'job' | 'message' | 'engagement';
+  targetId: string;
+  reasonCode: string;
+  detail?: string;
+  status: ReportStatus;
+  assignedAdminId?: string;
+  createdAt: string;
+}

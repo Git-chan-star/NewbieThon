@@ -6,6 +6,7 @@
 
 - 학생: 가입, 역할 선택, 5단계 프로필, 추천·검색·저장, 간편 지원, 제안 수락, 대회 탐색, 팀 생성·지원, 메시지, 업무 결과물 제출
 - 구인자: 조직 프로필, 공고 등록·게시, 지원자 상태 관리, 학생 검색, 메시지, 업무 시작·수정 요청·완료
+- 관리자: 운영 현황, 회원 활성/정지, 공고 상태 관리, 구인자 인증, 신고 처리
 - 공통: Expo SDK 57, React Native, TypeScript strict, Expo Router, TanStack Query
 - 서버: Supabase Auth, PostgreSQL, RLS, Storage, RPC 상태 전환, 인앱 알림, 감사 로그
 - UI: `#3182F6` 중심의 잇구 디자인 시스템, 밝은 회색 배경, 20px 화면 여백, 54px 주요 버튼, 둥근 입력창·카드
@@ -42,6 +43,8 @@ npx supabase db reset
 
 `db reset`은 로컬 개발 DB를 다시 만들고 `supabase/migrations/`와 `supabase/seed.sql`을 적용합니다. 운영 프로젝트에는 reset 명령을 사용하지 마세요.
 
+원격 DB 연결과 최초 관리자 계정 생성 절차는 [관리자 계정과 운영 DB 연결](docs/admin-and-deployment.md)을 따릅니다. 운영 비밀번호와 서비스 역할 키는 앱 코드나 GitHub에 저장하지 않습니다.
+
 ## 검증
 
 ```bash
@@ -64,4 +67,4 @@ tests/                        상태 규칙과 마이그레이션 통합 테스�
 docs/                         서버 계약과 Android 연결 안내
 ```
 
-실제 서비스 배포 전에는 Supabase 프로젝트 연결, 학교·사업자 인증, 푸시 알림, 운영자 신고 처리, 결제·세금 정책을 별도로 확정해야 합니다.
+실제 서비스 배포 전에는 Supabase 프로젝트 연결, 학교·사업자 인증, 푸시 알림, 개인정보·결제·세금 정책을 별도로 확정해야 합니다.

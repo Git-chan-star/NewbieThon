@@ -6,6 +6,7 @@ import { PGlite } from "@electric-sql/pglite";
 const bootstrapSupabaseSchemas = `
   create role anon nologin;
   create role authenticated nologin;
+  create role service_role nologin;
   create schema auth;
   create table auth.users (
     id uuid primary key,
@@ -45,7 +46,7 @@ test("Supabase 마이그레이션이 PostgreSQL에서 순서대로 적용된다"
   const files = (await readdir(migrationDirectory))
     .filter((name) => name.endsWith(".sql"))
     .sort();
-  assert.equal(files.length, 5);
+  assert.equal(files.length, 6);
 
   for (const file of files) {
     const sql = (await readFile(new URL(file, migrationDirectory), "utf8"))
@@ -69,6 +70,7 @@ test("Supabase 마이그레이션이 PostgreSQL에서 순서대로 적용된다"
   assert.ok(functions.rows.some((row) => row.routine_name === "publish_job"));
   assert.ok(functions.rows.some((row) => row.routine_name === "send_message"));
   assert.ok(functions.rows.some((row) => row.routine_name === "create_competition_team"));
+  assert.ok(functions.rows.some((row) => row.routine_name === "admin_set_user_active"));
 
   const employerId = "00000000-0000-0000-0000-000000000001";
   const studentId = "00000000-0000-0000-0000-000000000002";
@@ -251,6 +253,103 @@ test("Supabase 마이그레이션이 PostgreSQL에서 순서대로 적용된다"
     [teamId, outsiderId],
   );
   assert.equal(acceptedMember.rows[0].count, 1);
+
+  await db.query("select set_config('request.jwt.claim.sub', $1, false)", [employerId]);
+  const submittedVerification = await db.query(
+    "select (public.submit_employer_verification($1)).verification_status as status",
+    [`${employerId}/business-registration.pdf`],
+  );
+  assert.equal(submittedVerification.rows[0].status, "pending");
+
+  const adminId = "00000000-0000-0000-0000-000000000005";
+  await db.query(
+    `insert into auth.users (id, raw_user_meta_data)
+     values ($1, '{"role":"student","display_name":"잇구 관리자"}')`,
+    [adminId],
+  );
+  const promotedAdmin = await db.query(
+    "select (public.promote_user_to_admin($1)).role as role",
+    [adminId],
+  );
+  assert.equal(promotedAdmin.rows[0].role, "admin");
+
+  await db.query("select set_config('request.jwt.claim.sub', $1, false)", [studentId]);
+  await db.query("set role authenticated");
+  await assert.rejects(
+    db.query("select public.admin_set_user_active($1, false)", [outsiderId]),
+    /admin required/,
+  );
+  await db.query("reset role");
+
+  const report = await db.query(
+    `insert into public.reports (reporter_id, target_type, target_id, reason_code, detail)
+     values ($1, 'job', $2, 'misleading', '관리자 기능 테스트') returning id`,
+    [studentId, jobId],
+  );
+  const adminTestJob = await db.query(
+    `insert into public.jobs (
+      organization_id, employer_id, title, category, summary, tasks, deliverables,
+      no_specific_skill, work_mode, starts_on, ends_on, apply_deadline,
+      compensation_type, compensation_min, status, published_at
+    ) values (
+      $1, $2, '관리자 상태 변경 테스트', 'Android', '관리자 공고 관리 검증',
+      array['공고 검수'], array['검수 결과'], true, 'remote',
+      current_date + 1, current_date + 7, now() + interval '5 days', 'fixed', 100000,
+      'published', now()
+    ) returning id`,
+    [organizationId, employerId],
+  );
+
+  await db.query("select set_config('request.jwt.claim.sub', $1, false)", [adminId]);
+  await db.query("set role authenticated");
+  const suspendedUser = await db.query(
+    "select (public.admin_set_user_active($1, false)).is_active as is_active",
+    [outsiderId],
+  );
+  assert.equal(suspendedUser.rows[0].is_active, false);
+  await db.query("reset role");
+  await db.query("select set_config('request.jwt.claim.sub', $1, false)", [outsiderId]);
+  await db.query("set role authenticated");
+  const suspendedSelfVisibility = await db.query(
+    "select count(*)::int as count from public.users where id = $1",
+    [outsiderId],
+  );
+  assert.equal(suspendedSelfVisibility.rows[0].count, 0);
+  const suspendedJobVisibility = await db.query(
+    "select count(*)::int as count from public.jobs",
+  );
+  assert.equal(suspendedJobVisibility.rows[0].count, 0);
+  await db.query("reset role");
+  await db.query("select set_config('request.jwt.claim.sub', $1, false)", [adminId]);
+  await db.query("set role authenticated");
+  const restoredUser = await db.query(
+    "select (public.admin_set_user_active($1, true)).is_active as is_active",
+    [outsiderId],
+  );
+  assert.equal(restoredUser.rows[0].is_active, true);
+
+  const pausedJob = await db.query(
+    "select (public.admin_set_job_status($1, 'paused')).status as status",
+    [adminTestJob.rows[0].id],
+  );
+  assert.equal(pausedJob.rows[0].status, "paused");
+  const republishedJob = await db.query(
+    "select (public.admin_set_job_status($1, 'published')).status as status",
+    [adminTestJob.rows[0].id],
+  );
+  assert.equal(republishedJob.rows[0].status, "published");
+
+  const verifiedEmployer = await db.query(
+    "select (public.admin_review_employer_verification($1, 'verified', '테스트 승인')).verification_status as status",
+    [employerId],
+  );
+  assert.equal(verifiedEmployer.rows[0].status, "verified");
+  const resolvedReport = await db.query(
+    "select (public.admin_set_report_status($1, 'resolved')).status as status",
+    [report.rows[0].id],
+  );
+  assert.equal(resolvedReport.rows[0].status, "resolved");
+  await db.query("reset role");
 
   await db.close();
 });
