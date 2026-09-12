@@ -8,8 +8,8 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.hero}>
-        <View style={styles.brandIcon}><Text style={styles.brandIconText}>전</Text></View>
-        <Text style={styles.brand}>전공픽</Text>
+        <View style={styles.brandIcon}><Text style={styles.brandIconText}>잇</Text></View>
+        <Text style={styles.brand}>잇구</Text>
         <Text style={styles.title}>지금 배우는 전공으로{'\n'}첫 유료 업무를 시작해요</Text>
         <Text style={styles.subtitle}>이력서가 없어도 괜찮아요. 수업, 프로젝트, 할 수 있는 기술만으로 시작할 수 있어요.</Text>
       </View>

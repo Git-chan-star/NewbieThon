@@ -36,7 +36,7 @@ export default function EmployerOnboardingScreen() {
         <Text style={styles.title}>구인 정보를 알려주세요</Text>
         <Text style={styles.subtitle}>학생이 안심하고 지원할 수 있도록 필요한 내용만 받아요.</Text>
       </View>
-      <TextField label="조직·상호명" placeholder="예: 전공픽 스튜디오" value={organizationName} onChangeText={setOrganizationName} required />
+      <TextField label="조직·상호명" placeholder="예: 잇구 스튜디오" value={organizationName} onChangeText={setOrganizationName} required />
       <View style={styles.field}>
         <Text style={styles.label}>구인자 유형</Text>
         <View style={styles.chips}>

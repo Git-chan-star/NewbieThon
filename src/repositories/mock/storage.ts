@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PREFIX = 'newbiethon:mock:';
+const PREFIX = 'itgu:mock:';
 
 export async function readJSON<T>(key: string): Promise<T | null> {
   const raw = await AsyncStorage.getItem(PREFIX + key);

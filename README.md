@@ -1,4 +1,4 @@
-# 전공픽
+# 잇구
 
 대학 저학년이 수업과 프로젝트에서 익힌 전공 역량으로 첫 유료 업무를 찾고, 해커톤·공모전 팀원도 구할 수 있는 Android 우선 모바일 앱입니다. 구인자는 짧고 명확한 전공 업무를 등록하고 지원자와 대화한 뒤 결과물과 완료 이력을 관리할 수 있습니다.
 
@@ -8,7 +8,7 @@
 - 구인자: 조직 프로필, 공고 등록·게시, 지원자 상태 관리, 학생 검색, 메시지, 업무 시작·수정 요청·완료
 - 공통: Expo SDK 57, React Native, TypeScript strict, Expo Router, TanStack Query
 - 서버: Supabase Auth, PostgreSQL, RLS, Storage, RPC 상태 전환, 인앱 알림, 감사 로그
-- UI: `#3182F6` 중심의 전공픽 디자인 시스템, 밝은 회색 배경, 20px 화면 여백, 54px 주요 버튼, 둥근 입력창·카드
+- UI: `#3182F6` 중심의 잇구 디자인 시스템, 밝은 회색 배경, 20px 화면 여백, 54px 주요 버튼, 둥근 입력창·카드
 
 Supabase 환경값이 있으면 실제 서버 저장소를 사용하고, 값이 없으면 UI 개발과 발표 연습을 위한 예시 데이터로 실행됩니다.
 
@@ -55,7 +55,7 @@ EXPO_NO_TELEMETRY=1 npx expo export --platform web
 
 ```text
 app/                         역할별 화면과 라우팅
-src/components/ui/           전공픽 공통 UI
+src/components/ui/           잇구 공통 UI
 src/domain/contracts/        프런트·백엔드 공통 타입
 src/repositories/            mock/Supabase 저장소 전환 계층
 src/features/                학생·구인자·대회·메시지·업무 기능

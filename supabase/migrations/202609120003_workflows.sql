@@ -92,7 +92,7 @@ begin
     raise exception 'invalid verification document path' using errcode = '22023';
   end if;
 
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.employer_profiles
   set verification_status = 'pending', verification_document_path = document_path
   where user_id = auth.uid()
@@ -184,7 +184,7 @@ begin
     raise exception 'job publish validation failed: %', validation -> 'errors' using errcode = '22023';
   end if;
 
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.jobs
   set status = 'published', published_at = coalesce(published_at, now()), closed_at = null
   where id = target_job_id returning * into result;
@@ -218,7 +218,7 @@ begin
     raise exception 'invalid job status transition' using errcode = '22023';
   end if;
 
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.jobs
   set status = next_status,
       closed_at = case when next_status in ('closed', 'filled') then now() else closed_at end
@@ -379,7 +379,7 @@ begin
     raise exception 'invalid application status transition' using errcode = '22023';
   end if;
 
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.applications
   set status = next_status,
       viewed_at = case when next_status = 'viewed' then coalesce(viewed_at, now()) else viewed_at end
@@ -488,7 +488,7 @@ begin
     raise exception 'offer is no longer pending' using errcode = '22023';
   end if;
 
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.job_offers
   set status = case when accept then 'accepted' else 'declined' end,
       responded_at = now()
@@ -588,7 +588,7 @@ begin
     agreed_end_date, agreed_compensation_type, agreed_compensation_amount
   ) returning * into result;
 
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.jobs j
   set status = case
         when (select count(*) from public.engagements e where e.job_id = selected_job_id) >= j.openings
@@ -623,7 +623,7 @@ set search_path = public
 as $$
 declare result public.engagements;
 begin
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.engagements
   set status = 'in_progress'
   where id = engagement_id and employer_id = auth.uid() and status = 'ready'
@@ -677,7 +677,7 @@ begin
   ) values (
     target_engagement_id, auth.uid(), target_title, target_note, target_external_url, target_file_path, request_idempotency_key
   ) on conflict (engagement_id, submitted_by, idempotency_key) do nothing;
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.engagements set status = 'submitted' where id = target_engagement_id returning * into result;
   perform public.notify_once(result.employer_id, 'deliverable:' || target_engagement_id || ':' || request_idempotency_key, 'deliverable_submitted', '결과물이 도착했어요', '결과물을 확인하고 완료하거나 수정을 요청해 주세요.', '/employer/engagements/' || result.id);
   insert into public.audit_events (actor_id, entity_type, entity_id, event_type, next_state)
@@ -695,7 +695,7 @@ as $$
 declare result public.engagements;
 begin
   if nullif(trim(revision_note), '') is null then raise exception 'revision note required' using errcode = '22023'; end if;
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.engagements set status = 'revision_requested'
   where id = engagement_id and employer_id = auth.uid() and status = 'submitted'
   returning * into result;
@@ -721,7 +721,7 @@ begin
   where actor_id = auth.uid() and operation = 'complete_engagement' and idempotency_records.idempotency_key = complete_engagement.idempotency_key;
   if existing_resource is not null then select * into result from public.engagements where id = existing_resource; return result; end if;
 
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.engagements set status = 'completed', completed_at = now()
   where id = engagement_id and employer_id = auth.uid() and status = 'submitted'
   returning * into result;

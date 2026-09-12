@@ -1,4 +1,4 @@
-project_id = "newbiethon"
+project_id = "itgu"
 
 [api]
 enabled = true
@@ -18,7 +18,7 @@ port = 54323
 [auth]
 enabled = true
 site_url = "http://127.0.0.1:8081"
-additional_redirect_urls = ["newbiethon://auth/callback"]
+additional_redirect_urls = ["itgu://auth/callback"]
 jwt_expiry = 3600
 enable_signup = true
 

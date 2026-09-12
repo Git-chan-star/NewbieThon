@@ -322,7 +322,7 @@ set search_path = public
 as $$
 declare result public.applications;
 begin
-  perform set_config('newbiethon.workflow', 'on', true);
+  perform set_config('itgu.workflow', 'on', true);
   update public.applications set status = 'withdrawn'
   where id = target_application_id and student_id = auth.uid()
     and status in ('submitted', 'viewed', 'chatting', 'interview')

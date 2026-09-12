@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "전공픽",
-    "slug": "newbiethon-app",
-    "scheme": "newbiethon",
+    "name": "잇구",
+    "slug": "itgu-app",
+    "scheme": "itgu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.newbiethon.jeongongpick",
+      "package": "com.newbiethon.itgu",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

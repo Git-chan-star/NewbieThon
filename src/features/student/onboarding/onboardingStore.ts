@@ -80,7 +80,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       reset: () => set({ draft: emptyDraft }),
     }),
     {
-      name: 'newbiethon:onboarding-draft',
+      name: 'itgu:onboarding-draft',
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

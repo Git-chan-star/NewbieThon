@@ -1,4 +1,4 @@
-# 전공픽 통합 구현 현황
+# 잇구 통합 구현 현황
 
 브랜치: `codex/integrated-mvp`
 
@@ -8,7 +8,7 @@
 - [x] Expo SDK 57 앱 설정과 Supabase 의존성 단일화
 - [x] 공통 계약을 `src/domain/contracts/types.ts`로 단일화하고 DB enum 변환 계층 추가
 - [x] 첨부 Flutter 시안의 색상, 타이포, 여백, 버튼, 입력창, 선택 카드 규칙 적용
-- [x] 앱 이름과 Android 패키지를 `전공픽`, `com.newbiethon.jeongongpick`으로 설정
+- [x] 앱 이름과 Android 패키지를 `잇구`, `com.newbiethon.itgu`로 설정
 - [x] 환경값 유무에 따라 mock/Supabase 저장소 자동 전환
 - [x] 실제 Supabase 인증, 가입 후 학생·구인자 역할 선택, 역할별 온보딩
 - [x] 학생 프로필·기술·과목·프로젝트 실제 저장

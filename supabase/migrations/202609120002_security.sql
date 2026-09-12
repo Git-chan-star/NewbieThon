@@ -15,7 +15,7 @@ language plpgsql
 set search_path = public
 as $$
 begin
-  if coalesce(current_setting('newbiethon.workflow', true), 'off') = 'on' then
+  if coalesce(current_setting('itgu.workflow', true), 'off') = 'on' then
     return new;
   end if;
 
