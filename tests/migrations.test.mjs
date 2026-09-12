@@ -10,6 +10,7 @@ const bootstrapSupabaseSchemas = `
   create schema auth;
   create table auth.users (
     id uuid primary key,
+    email text,
     raw_user_meta_data jsonb not null,
     created_at timestamptz not null default now()
   );
@@ -46,7 +47,7 @@ test("Supabase 마이그레이션이 PostgreSQL에서 순서대로 적용된다"
   const files = (await readdir(migrationDirectory))
     .filter((name) => name.endsWith(".sql"))
     .sort();
-  assert.equal(files.length, 6);
+  assert.equal(files.length, 7);
 
   for (const file of files) {
     const sql = (await readFile(new URL(file, migrationDirectory), "utf8"))
