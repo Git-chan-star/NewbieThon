@@ -82,7 +82,7 @@ test("Supabase 마이그레이션이 PostgreSQL에서 순서대로 적용된다"
   await db.query("select set_config('request.jwt.claim.sub', $1, false)", [employerId]);
   const onboarding = await db.query(`
     select (public.onboard_employer(
-      '뉴비톤 테스트 조직', '스타트업', 'IT', '테스트 조직',
+      '잇구 테스트 조직', '스타트업', 'IT', '테스트 조직',
       '담당자', '대표', 'work@example.com', null
     )).organization_id as organization_id
   `);

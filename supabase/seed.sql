@@ -19,7 +19,7 @@ insert into public.competitions (
   location, application_deadline, status, published_at
 ) values (
   '2026 대학생 AI 서비스 해커톤',
-  '뉴비톤 운영팀',
+  '잇구 운영팀',
   '생활 속 문제를 AI로 해결하는 대학생 해커톤',
   '기획, 디자인, 개발 전공자가 팀을 만들어 서비스를 완성합니다.',
   array['AI', '앱 서비스'],
