@@ -47,7 +47,7 @@ test("Supabase 마이그레이션이 PostgreSQL에서 순서대로 적용된다"
   const files = (await readdir(migrationDirectory))
     .filter((name) => name.endsWith(".sql"))
     .sort();
-  assert.equal(files.length, 7);
+  assert.equal(files.length, 8);
 
   for (const file of files) {
     const sql = (await readFile(new URL(file, migrationDirectory), "utf8"))
@@ -108,6 +108,12 @@ test("Supabase 마이그레이션이 PostgreSQL에서 순서대로 적용된다"
     [jobId],
   );
   assert.equal(published.rows[0].status, "published");
+
+  const editedJob = await db.query(
+    "update public.jobs set summary = '수정된 공고 설명' where id = $1 returning summary",
+    [jobId],
+  );
+  assert.equal(editedJob.rows[0].summary, "수정된 공고 설명");
 
   await db.query("select set_config('request.jwt.claim.sub', $1, false)", [studentId]);
   const applicationResult = await db.query(

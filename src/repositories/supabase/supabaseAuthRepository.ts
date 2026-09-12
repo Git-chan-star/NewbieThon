@@ -45,7 +45,15 @@ export const supabaseAuthRepository: AuthRepository = {
     });
     if (error) throw new Error(error.message);
     if (!data.user) throw new Error('회원가입 결과를 확인할 수 없어요.');
-    if (!data.session) throw new Error('인증 메일을 확인한 뒤 로그인해 주세요.');
+    if (!data.session) {
+      const { error: signInError } = await client.auth.signInWithPassword({
+        email: input.email,
+        password: input.password,
+      });
+      if (signInError) {
+        throw new Error('회원가입은 완료됐지만 로그인에 실패했어요. 다시 로그인해 주세요.');
+      }
+    }
     return (await fetchCurrentUser())!;
   },
 
