@@ -3,7 +3,7 @@
     "name": "잇구",
     "slug": "itgu-app",
     "scheme": "itgu",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,6 +16,7 @@
     },
     "android": {
       "package": "com.newbiethon.itgu",
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
