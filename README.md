@@ -18,3 +18,15 @@ python -m venv .venv
 - 테스트: `backend` 폴더에서 `.\.venv\Scripts\python -m unittest -v`
 
 회원가입·로그인, 공고 등록·조회, 학생 지원, 기업 제안·수락, 매칭·완료 처리를 제공합니다. 현재 로컬 MVP이며 인터넷 배포와 결제·정산은 포함하지 않습니다.
+
+## 프론트엔드 (앱)
+
+React Native + Expo + TypeScript + Expo Router 기반 모바일 앱입니다.
+
+```powershell
+npm install
+npm run android   # 또는 npm run ios / npm run web
+```
+
+- 백엔드 연동 전까지 `src/repositories/mock/`의 목데이터로 동작합니다.
+- 환경변수: 필요 시 `.env.local`에 `EXPO_PUBLIC_API_BASE_URL` 등을 정의합니다 (커밋하지 않음).

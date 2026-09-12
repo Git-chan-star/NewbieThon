@@ -1,0 +1,191 @@
+import { router } from 'expo-router';
+import { useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ChoiceChip, EmptyState, ErrorState, JobCard, SkeletonJobCard, TextField } from '@/components/ui';
+import type { Job } from '@/domain/contracts/types';
+import { useSearchJobs } from '@/features/student/jobs/useJobs';
+import { useDebouncedValue } from '@/lib/useDebouncedValue';
+import { colors, spacing, typography } from '@/theme';
+
+const CATEGORY_OPTIONS = ['개발', '데이터·AI', '디자인·UI·UX', '기획·리서치', '콘텐츠·마케팅'];
+const DIFFICULTY_OPTIONS: { value: Job['difficulty']; label: string }[] = [
+  { value: 'beginner', label: '입문' },
+  { value: 'basic', label: '기초' },
+  { value: 'intermediate', label: '중급' },
+];
+const WORK_MODE_OPTIONS: { value: Job['workMode']; label: string }[] = [
+  { value: 'remote', label: '재택' },
+  { value: 'onsite', label: '대면' },
+  { value: 'hybrid', label: '혼합' },
+];
+
+export default function SearchScreen() {
+  const [keyword, setKeyword] = useState('');
+  const debouncedKeyword = useDebouncedValue(keyword, 300);
+  const [category, setCategory] = useState<string | undefined>();
+  const [difficulty, setDifficulty] = useState<Job['difficulty'] | undefined>();
+  const [workMode, setWorkMode] = useState<Job['workMode'] | undefined>();
+  const [beginnerFriendlyOnly, setBeginnerFriendlyOnly] = useState(false);
+
+  const query = useMemo(
+    () => ({ keyword: debouncedKeyword, category, difficulty, workMode, beginnerFriendlyOnly }),
+    [debouncedKeyword, category, difficulty, workMode, beginnerFriendlyOnly]
+  );
+
+  const results = useSearchJobs(query);
+  const jobs = useMemo(() => results.data?.pages.flatMap((p) => p.items) ?? [], [results.data]);
+
+  const activeFilters: { key: string; label: string; clear: () => void }[] = [];
+  if (category) activeFilters.push({ key: 'category', label: category, clear: () => setCategory(undefined) });
+  if (difficulty)
+    activeFilters.push({
+      key: 'difficulty',
+      label: DIFFICULTY_OPTIONS.find((d) => d.value === difficulty)?.label ?? difficulty,
+      clear: () => setDifficulty(undefined),
+    });
+  if (workMode)
+    activeFilters.push({
+      key: 'workMode',
+      label: WORK_MODE_OPTIONS.find((w) => w.value === workMode)?.label ?? workMode,
+      clear: () => setWorkMode(undefined),
+    });
+  if (beginnerFriendlyOnly)
+    activeFilters.push({ key: 'beginner', label: '저학년 가능', clear: () => setBeginnerFriendlyOnly(false) });
+
+  const clearAll = () => {
+    setCategory(undefined);
+    setDifficulty(undefined);
+    setWorkMode(undefined);
+    setBeginnerFriendlyOnly(false);
+  };
+
+  return (
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <View style={styles.searchBar}>
+        <TextField
+          label="공고 검색"
+          placeholder="어떤 업무를 찾고 있나요?"
+          value={keyword}
+          onChangeText={setKeyword}
+          accessibilityLabel="공고 검색"
+        />
+      </View>
+
+      <View style={styles.filterBlock}>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={CATEGORY_OPTIONS}
+          keyExtractor={(item) => item}
+          contentContainerStyle={styles.filterRow}
+          renderItem={({ item }) => (
+            <ChoiceChip
+              label={item}
+              selected={category === item}
+              onPress={() => setCategory(category === item ? undefined : item)}
+            />
+          )}
+        />
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={DIFFICULTY_OPTIONS}
+          keyExtractor={(item) => item.value}
+          contentContainerStyle={styles.filterRow}
+          renderItem={({ item }) => (
+            <ChoiceChip
+              label={item.label}
+              selected={difficulty === item.value}
+              onPress={() => setDifficulty(difficulty === item.value ? undefined : item.value)}
+            />
+          )}
+        />
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={WORK_MODE_OPTIONS}
+          keyExtractor={(item) => item.value}
+          contentContainerStyle={styles.filterRow}
+          renderItem={({ item }) => (
+            <ChoiceChip
+              label={item.label}
+              selected={workMode === item.value}
+              onPress={() => setWorkMode(workMode === item.value ? undefined : item.value)}
+            />
+          )}
+          ListFooterComponent={
+            <ChoiceChip
+              label="저학년 가능"
+              selected={beginnerFriendlyOnly}
+              onPress={() => setBeginnerFriendlyOnly((v) => !v)}
+            />
+          }
+        />
+
+        {activeFilters.length > 0 ? (
+          <View style={styles.activeFilterRow}>
+            {activeFilters.map((filter) => (
+              <Pressable key={filter.key} onPress={filter.clear} style={styles.activeChip}>
+                <Text style={styles.activeChipText}>{filter.label} ✕</Text>
+              </Pressable>
+            ))}
+            <Pressable onPress={clearAll} hitSlop={8}>
+              <Text style={styles.clearAllText}>전체 초기화</Text>
+            </Pressable>
+          </View>
+        ) : null}
+      </View>
+
+      <FlatList
+        data={jobs}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        onEndReached={() => {
+          if (results.hasNextPage) results.fetchNextPage();
+        }}
+        onEndReachedThreshold={0.4}
+        renderItem={({ item }) => (
+          <JobCard job={item} onPress={() => router.push(`/(student)/job/${item.id}`)} />
+        )}
+        ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
+        ListEmptyComponent={
+          results.isLoading ? (
+            <View style={{ gap: spacing.sm }}>
+              <SkeletonJobCard />
+              <SkeletonJobCard />
+            </View>
+          ) : results.isError ? (
+            <ErrorState onAction={() => results.refetch()} />
+          ) : (
+            <EmptyState
+              title="조건에 맞는 공고가 없어요"
+              description="필터를 완화하거나 초기화해 보세요."
+              actionLabel={activeFilters.length > 0 ? '필터 초기화' : undefined}
+              onAction={activeFilters.length > 0 ? clearAll : undefined}
+            />
+          )
+        }
+      />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.bg },
+  searchBar: { paddingHorizontal: spacing.xl, paddingTop: spacing.sm },
+  filterBlock: { paddingTop: spacing.sm, gap: spacing.xs },
+  filterRow: { paddingHorizontal: spacing.xl, gap: spacing.xs },
+  activeFilterRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xxs,
+  },
+  activeChip: { backgroundColor: colors.primaryMuted, borderRadius: 999, paddingHorizontal: spacing.sm, paddingVertical: 4 },
+  activeChipText: { ...typography.caption, color: colors.primary },
+  clearAllText: { ...typography.captionBold, color: colors.textTertiary },
+  listContent: { padding: spacing.xl, paddingTop: spacing.sm, flexGrow: 1 },
+});
