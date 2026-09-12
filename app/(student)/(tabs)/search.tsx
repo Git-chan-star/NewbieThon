@@ -4,7 +4,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChoiceChip, EmptyState, ErrorState, JobCard, SkeletonJobCard, TextField } from '@/components/ui';
 import type { Job } from '@/domain/contracts/types';
-import { useSearchJobs } from '@/features/student/jobs/useJobs';
+import { useSavedJobs, useSearchJobs, useToggleSaveJob } from '@/features/student/jobs/useJobs';
 import { useDebouncedValue } from '@/lib/useDebouncedValue';
 import { colors, spacing, typography } from '@/theme';
 
@@ -20,7 +20,10 @@ const WORK_MODE_OPTIONS: { value: Job['workMode']; label: string }[] = [
   { value: 'hybrid', label: '혼합' },
 ];
 
+type Segment = 'search' | 'saved';
+
 export default function SearchScreen() {
+  const [segment, setSegment] = useState<Segment>('search');
   const [keyword, setKeyword] = useState('');
   const debouncedKeyword = useDebouncedValue(keyword, 300);
   const [category, setCategory] = useState<string | undefined>();
@@ -35,6 +38,10 @@ export default function SearchScreen() {
 
   const results = useSearchJobs(query);
   const jobs = useMemo(() => results.data?.pages.flatMap((p) => p.items) ?? [], [results.data]);
+
+  const savedJobs = useSavedJobs();
+  const savedJobItems = useMemo(() => savedJobs.data?.pages.flatMap((p) => p.items) ?? [], [savedJobs.data]);
+  const toggleSave = useToggleSaveJob();
 
   const activeFilters: { key: string; label: string; clear: () => void }[] = [];
   if (category) activeFilters.push({ key: 'category', label: category, clear: () => setCategory(undefined) });
@@ -62,6 +69,17 @@ export default function SearchScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <View style={styles.segmentRow}>
+        <ChoiceChip label="찾기" selected={segment === 'search'} onPress={() => setSegment('search')} />
+        <ChoiceChip
+          label={`저장한 공고 ${savedJobItems.length > 0 ? savedJobItems.length : ''}`.trim()}
+          selected={segment === 'saved'}
+          onPress={() => setSegment('saved')}
+        />
+      </View>
+
+      {segment === 'search' ? (
+        <>
       <View style={styles.searchBar}>
         <TextField
           label="공고 검색"
@@ -167,12 +185,48 @@ export default function SearchScreen() {
           )
         }
       />
+        </>
+      ) : (
+        <FlatList
+          data={savedJobItems}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          onEndReached={() => {
+            if (savedJobs.hasNextPage) savedJobs.fetchNextPage();
+          }}
+          onEndReachedThreshold={0.4}
+          renderItem={({ item }) => (
+            <JobCard
+              job={item}
+              onPress={() => router.push(`/(student)/job/${item.id}`)}
+              onToggleSave={() => toggleSave.mutate({ jobId: item.id, saved: true })}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
+          ListEmptyComponent={
+            savedJobs.isLoading ? (
+              <View style={{ gap: spacing.sm }}>
+                <SkeletonJobCard />
+                <SkeletonJobCard />
+              </View>
+            ) : savedJobs.isError ? (
+              <ErrorState onAction={() => savedJobs.refetch()} />
+            ) : (
+              <EmptyState
+                title="저장한 공고가 없어요"
+                description="관심 있는 공고를 저장하면 여기서 모아볼 수 있어요."
+              />
+            )
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
+  segmentRow: { flexDirection: 'row', gap: spacing.xs, paddingHorizontal: spacing.xl, paddingTop: spacing.sm },
   searchBar: { paddingHorizontal: spacing.xl, paddingTop: spacing.sm },
   filterBlock: { paddingTop: spacing.sm, gap: spacing.xs },
   filterRow: { paddingHorizontal: spacing.xl, gap: spacing.xs },
